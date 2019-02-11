@@ -1,0 +1,10 @@
+*.txt
+*.old
+_site/
+.DS_Store
+*.bat
+swatches.html
+node_modules/
+.vscode/
+.ignore/
+/scripts

@@ -1,0 +1,13 @@
+{
+  "name": "pastaa",
+  "version": "1.0.0",
+  "main": "pasta.js",
+  "author": "ogewan",
+  "license": "MIT",
+  "dependencies": {
+    "fast-diff": "^1.2.0"
+  },
+  "scripts": {
+    "example": "node example.js"
+  }
+}
