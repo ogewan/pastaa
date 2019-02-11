@@ -61,5 +61,7 @@ module.exports = {
         vm.runInContext(remote, sandbox, dest);
         return sandbox;
     },
+    //TODO: Called from a build script, write a new JS file where paste(...) is replaced by the called scripts
     pasteProd: () => 0
 };
+/* jshint ignore:end */
