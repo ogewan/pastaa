@@ -54,7 +54,7 @@ const scripts = `${__dirname}/scripts`,
             if (cache) res = await getWrap(src, target);
             if (res.remote) {
                 try { await mkdir(scripts); } catch (e) { }
-                await write(dest, res.remote);
+                try { await write(dest, res.remote); } catch (e) { console.log(e) }
             }
             else {
                 throw res.err;
@@ -74,8 +74,9 @@ module.exports = {
         vm.runInContext(await script(src), sandbox, dest);
         return sandbox;
     },
-    copyPasta: async (target, start = `/*#PASTE:`, end = `#*/`, prefix = '_', cache = true) => {
-        let source = await read(target, 'utf8'),
+    copyPasta: async (target, options = {start: `/*#PASTE:`, end: `#*/`, prefix: '_', cache: true}) => {
+        let {start, end, prefix, cache} = options,
+            source = await read(target, 'utf8'),
             buff = source.split(new RegExp(`(${regEsc(start)})|(${regEsc(end)})`, 'g'));
 
         for (let id in buff) {
