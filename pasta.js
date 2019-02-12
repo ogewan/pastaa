@@ -74,8 +74,8 @@ module.exports = {
         vm.runInContext(await script(src), sandbox, dest);
         return sandbox;
     },
-    copyPasta: async (target, options = {start: `/*#PASTE:`, end: `#*/`, prefix: '_', cache: true}) => {
-        let {start, end, prefix, cache} = options,
+    copyPasta: async (target, options = {}) => {
+        let {start, end, prefix, cache} = {start: `/*#PASTE:`, end: `#*/`, prefix: '_', cache: true, ...options},
             source = await read(target, 'utf8'),
             buff = source.split(new RegExp(`(${regEsc(start)})|(${regEsc(end)})`, 'g'));
 
