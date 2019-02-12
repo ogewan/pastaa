@@ -22,16 +22,13 @@ const scripts = `${__dirname}/scripts`,
 
             request.on('error', (err) => reject(err))
         });
-    };
-    
-module.exports = {
-    paste: async (src) => {
+    },
+    script = async src => {
         let target = new URL(src),
             filename = path.basename(target.pathname),
             dest = path.join(scripts, filename),
             remote = '',
-            remoteE,
-            sandbox;
+            remoteE;
         
         try { remote = await pget(src, (target.protocol == 'https:') ? require('https') : require('http')); }
         catch (e) { remoteE = e; }
@@ -41,11 +38,13 @@ module.exports = {
                 changes = [];
             
             if (remote.length) {
-                changes = diff(local, remote); 
-            }
-            if (changes.length > 1) {
-                await write(dest, remote);
-                console.log(`${dest} has been updated.`)
+                let changes = diff(local, remote); 
+                if (changes.length > 1) {
+                    await write(dest, remote);
+                    console.log(`${dest} has been updated.`)
+                }
+            } else {
+                remote = local;
             }
         }
         catch (e) {
@@ -54,12 +53,29 @@ module.exports = {
                 await write(dest, remote);
             }
             else {
-                throw reportE;
+                throw remoteE;
             }
         }
-        sandbox = vm.createContext();
-        vm.runInContext(remote, sandbox, dest);
+        return remote;
+    };
+    
+module.exports = {
+    paste: async (src) => {
+        let sandbox = vm.createContext();
+        vm.runInContext(await script(src), sandbox, dest);
         return sandbox;
+    },
+    copyPasta: async target => {
+        let source = await read(target, 'utf8'),
+            buff = source.split(/(\/\*#PASTA:)|(#\*\/)/g);
+
+        for (let id in buff) {
+            if (id > 1 && buff[id - 2] == "/*#PASTA:") {
+                buff[id] = script(buff[id]);
+            }
+        }
+        
+        await write(path.join(path.dirname(target), "_", path.basename(target)), buff.join(''));
     },
     //TODO: Called from a build script, write a new JS file where paste(...) is replaced by the called scripts
     pasteProd: () => 0
