@@ -24,7 +24,7 @@ const scripts = `${__dirname}/scripts`,
         });
     },
     getWrap = async (src, target) => {
-        let err;
+        let err, remote;
         
         try { remote = await pget(src, (target.protocol == 'https:') ? require('https') : require('http')); }
         catch (e) { err = e; }
